@@ -1,0 +1,139 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Whack-a-Mole</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #e0f7fa;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    header {
+      background: linear-gradient(135deg, #00796b, #004d40);
+      color: white;
+      padding: 2rem;
+      border-radius: 1rem;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    section {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 1rem;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      margin-bottom: 1.5rem;
+    }
+    .game-container {
+      display: grid;
+      grid-template-columns: repeat(3, 100px);
+      gap: 10px;
+      justify-content: center;
+      margin-top: 20px;
+    }
+    .hole {
+      width: 100px;
+      height: 100px;
+      background-color: #c8e6c9;
+      border-radius: 50%;
+      position: relative;
+      box-shadow: inset 0 0 10px rgba(0,0,0,0.3);
+    }
+    .mole {
+      width: 100%;
+      height: 100%;
+      background: url('https://cdn-icons-png.flaticon.com/512/616/616408.png') center/contain no-repeat;
+      display: none;
+      cursor: pointer;
+      background-color: #fff;
+    }
+    .mole.show {
+      display: block;
+      animation: pop 0.3s ease-out;
+    }
+    @keyframes pop {
+      0% { transform: scale(0.5); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+  </style>
+</head>
+<body class="container py-4">
+  <header class="text-center mb-5">
+    <h1>Whack-a-Mole</h1>
+    <p class="lead">Klik tikus secepat mungkin untuk mendapatkan skor tertinggi!</p>
+  </header>  <section id="about">
+    <h2>About</h2>
+    <p>Whack-a-Mole adalah game sederhana di mana pemain harus mengklik tikus yang muncul secara acak dari lubang sebelum menghilang. Semakin cepat dan akurat, semakin tinggi skornya!</p>
+  </section>  <section id="play">
+    <h2>Play</h2>
+    <div class="text-center mb-3">
+      <button id="startBtn" class="btn btn-success btn-lg">Mulai Game</button>
+      <p class="mt-3 fs-4">Skor: <span id="score">0</span></p>
+    </div>
+    <div class="game-container">
+      <div class="hole"><div class="mole"></div></div>
+      <div class="hole"><div class="mole"></div></div>
+      <div class="hole"><div class="mole"></div></div>
+      <div class="hole"><div class="mole"></div></div>
+      <div class="hole"><div class="mole"></div></div>
+      <div class="hole"><div class="mole"></div></div>
+    </div>
+  </section>  <section id="how-to-play">
+    <h2>How to Play</h2>
+    <ul>
+      <li>Klik tombol <strong>Mulai Game</strong> untuk memulai permainan.</li>
+      <li>Tikus akan muncul secara acak di salah satu lubang.</li>
+      <li>Klik tikus secepat mungkin untuk menambah skor!</li>
+      <li>Permainan berlangsung selama 10 detik.</li>
+    </ul>
+  </section>  <section id="credit">
+    <h2>Credit by</h2>
+    <p>Game ini dibuat oleh <strong>Randi Hartono</strong> dan <strong>Satria Raffi</strong>.</p>
+  </section>  <script>
+    const moles = document.querySelectorAll('.mole');
+    const scoreBoard = document.getElementById('score');
+    const startBtn = document.getElementById('startBtn');
+    let score = 0;
+    let lastHole;
+    let timeUp = false;
+
+    function randomTime(min, max) {
+      return Math.round(Math.random() * (max - min) + min);
+    }
+
+    function randomHole(holes) {
+      const idx = Math.floor(Math.random() * holes.length);
+      const hole = holes[idx];
+      if (hole === lastHole) return randomHole(holes);
+      lastHole = hole;
+      return hole;
+    }
+
+    function peep() {
+      const time = randomTime(500, 1000);
+      const hole = randomHole(document.querySelectorAll('.hole'));
+      const mole = hole.querySelector('.mole');
+      mole.classList.add('show');
+      setTimeout(() => {
+        mole.classList.remove('show');
+        if (!timeUp) peep();
+      }, time);
+    }
+
+    function startGame() {
+      score = 0;
+      scoreBoard.textContent = score;
+      timeUp = false;
+      peep();
+      setTimeout(() => timeUp = true, 10000);
+    }
+
+    moles.forEach(mole => mole.addEventListener('click', () => {
+      if (!mole.classList.contains('show')) return;
+      score++;
+      mole.classList.remove('show');
+      scoreBoard.textContent = score;
+    }));
+
+    startBtn.addEventListener('click', startGame);
+  </script></body>
+</html>
