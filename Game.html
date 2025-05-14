@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Monster Smasher</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #fef6e4; /* Color Hunt theme */
+      font-family: 'Segoe UI', sans-serif;
+    }
+    .game-area {
+      position: relative;
+      width: 100%;
+      height: 400px;
+      background-color: #f3d2c1;
+      border: 3px solid #001858;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .monster {
+      width: 60px;
+      height: 60px;
+      background: url('img/hulk.jpg') no-repeat center center / cover;
+      position: absolute;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="container py-4">
+    <header class="text-center mb-4">
+      <h1 class="display-4 fw-bold text-primary">Monster Smasher</h1>
+    </header>
+
+    <section class="mb-4">
+      <h2>About</h2>
+      <p>Game ini menguji kecepatan dan ketepatan kamu untuk mengalahkan monster sebelum mereka kabur.</p>
+    </section>
+
+    <section class="mb-4">
+      <h2>How to Play</h2>
+      <p>Klik monster yang muncul di area permainan. Setiap monster yang diklik akan memberi poin. Jika kamu membiarkan 5 monster lolos, game over!</p>
+    </section>
+
+    <section class="mb-4">
+      <h2>Play</h2>
+      <div class="mb-2">
+        <button class="btn btn-success" onclick="startGame()">Mulai Bermain</button>
+        <span class="ms-3 fw-bold">Skor: <span id="score">0</span></span>
+        <span class="ms-3 fw-bold text-danger">Miss: <span id="miss">0</span></span>
+      </div>
+      <div class="game-area" id="gameArea"></div>
+    </section>
+
+    <section class="mb-4">
+      <h2>Credit by</h2>
+      <p>Dibuat oleh [Nama Kamu]</p>
+    </section>
+  </div>
+
+  <script>
+    const gameArea = document.getElementById('gameArea');
+    let score = 0;
+    let miss = 0;
+
+    function randomPosition() {
+      const x = Math.random() * (gameArea.clientWidth - 60);
+      const y = Math.random() * (gameArea.clientHeight - 60);
+      return { x, y };
+    }
+
+    function spawnMonster() {
+      const monster = document.createElement('div');
+      monster.classList.add('monster');
+      const { x, y } = randomPosition();
+      monster.style.left = `${x}px`;
+      monster.style.top = `${y}px`;
+
+      monster.onclick = () => {
+        score++;
+        document.getElementById('score').textContent = score;
+        monster.remove();
+      };
+
+      gameArea.appendChild(monster);
+
+      setTimeout(() => {
+        if (gameArea.contains(monster)) {
+          monster.remove();
+          miss++;
+          document.getElementById('miss').textContent = miss;
+          if (miss >= 5) {
+            alert('Game Over! Skor kamu: ' + score);
+            resetGame();
+          }
+        }
+      }, 1500);
+    }
+
+    function startGame() {
+      resetGame();
+      const interval = setInterval(() => {
+        if (miss >= 5) {
+          clearInterval(interval);
+        } else {
+          spawnMonster();
+        }
+      }, 800);
+    }
+
+    function resetGame() {
+      score = 0;
+      miss = 0;
+      document.getElementById('score').textContent = score;
+      document.getElementById('miss').textContent = miss;
+      gameArea.innerHTML = '';
+    }
+  </script>
+</body>
+</html>
